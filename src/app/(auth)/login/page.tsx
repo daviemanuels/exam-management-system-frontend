@@ -2,15 +2,36 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { setCookie } from "cookies-next";
+import { api } from "@/services/api";
+import { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [login, setLogin] = useState("");
   const [senha, setSenha] = useState("");
+  const router = useRouter();
 
-  function handleLogin(e: React.FormEvent) {
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
 
-    console.log({ login, senha });
+    try {
+      const response = await api.post("/login", {
+        login,
+        senha,
+      });
+
+      setCookie("session", response.data.token, {
+        maxAge: 60 * 60 * 24,
+        path: "/",
+      });
+
+      router.push("/dashboard");
+    } catch (error) {
+      const err = error as AxiosError<{ message: string }>;
+
+      alert(err.response?.data?.message || "Erro ao fazer login");
+    }
   }
 
   return (
