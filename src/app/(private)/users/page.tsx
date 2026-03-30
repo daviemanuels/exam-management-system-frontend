@@ -14,14 +14,17 @@ import {
 } from "@tanstack/react-table";
 import { getRoles } from "@/services/roles";
 import { CreateUserDTO } from "@/types/user/CreateUserDTO";
+import { useForm } from "react-hook-form";
 
 type User = {
   id: string;
   nome: string;
   login: string;
   senha?: string;
+  confirmSenha: string;
   status: string;
   funcao_usuario: string;
+  roleId: string;
   role?: Role;
 };
 
@@ -39,24 +42,7 @@ export default function UsersPage() {
   const [openEdit, setOpenEdit] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
-  const [createForm, setCreateForm] = useState({
-    nome: "",
-    login: "",
-    senha: "",
-    confirmSenha: "",
-    funcao_usuario: "",
-    roleId: "",
-  });
-
-  const [editForm, setEditForm] = useState({
-    nome: "",
-    login: "",
-    senha: "",
-    confirmSenha: "",
-    funcao_usuario: "",
-    status: "",
-    roleId: "",
-  });
+  const { register, handleSubmit, reset, setValue, watch } = useForm<User>();
 
   function handleCloseModal() {
     setOpenCreate(false);
@@ -66,72 +52,61 @@ export default function UsersPage() {
 
   function handleOpenEdit(user: User) {
     setSelectedUserId(user.id);
-
-    setEditForm({
-      nome: user.nome,
-      login: user.login,
-      senha: "",
-      confirmSenha: "",
-      funcao_usuario: user.funcao_usuario,
-      status: user.status,
-      roleId: user.role?.id || "",
-    });
-
     setOpenEdit(true);
+
+    setValue("nome", user.nome);
+    setValue("login", user.login);
+    setValue("senha", "");
+    setValue("confirmSenha", "");
+    setValue("funcao_usuario", user.funcao_usuario);
+    setValue("status", user.status);
+    setValue("roleId", user.role?.id || "");
   }
 
-  async function handleUpdateUser() {
+  async function handleUpdateUser(data: User) {
     if (!selectedUserId) return;
+
     await updateUser(selectedUserId, {
-      nome: editForm.nome,
-      login: editForm.login,
-      senha: editForm.senha || undefined, // evita sobrescrever se vazio
-      funcao_usuario: editForm.funcao_usuario,
-      status: editForm.status,
-      roleId: editForm.roleId,
+      nome: data.nome,
+      login: data.login,
+      senha: data.senha || undefined,
+      funcao_usuario: data.funcao_usuario,
+      status: data.status!,
+      roleId: data.roleId,
     });
 
     setOpenEdit(false);
     setSelectedUserId(null);
-
-    const response = await getUsers();
-    setData(response);
+    reset();
+    setData(await getUsers());
   }
 
-  async function handleCreateUser() {
-    if (createForm.senha !== createForm.confirmSenha) {
+  async function handleCreateUser(data: User) {
+    if (data.senha !== data.confirmSenha) {
       alert("Senhas não conferem");
       return;
     }
 
-    try {
-      const payload: CreateUserDTO = {
-        nome: createForm.nome,
-        login: createForm.login,
-        senha: createForm.senha,
-        funcao_usuario: createForm.funcao_usuario,
-        roleId: createForm.roleId,
-      };
+    await createUser({
+      nome: data.nome,
+      login: data.login,
+      senha: data.senha,
+      funcao_usuario: data.funcao_usuario,
+      roleId: data.roleId,
+    });
 
-      await createUser(payload);
-
-      setOpenCreate(false);
-
-      setCreateForm({
-        nome: "",
-        login: "",
-        senha: "",
-        confirmSenha: "",
-        funcao_usuario: "",
-        roleId: "",
-      });
-
-      const response = await getUsers();
-      setData(response);
-    } catch (error) {
-      console.error("Erro ao criar usuário:", error);
-    }
+    setOpenCreate(false);
+    reset();
+    setData(await getUsers());
   }
+
+  const onSubmit = (data: User) => {
+    if (openEdit) {
+      handleUpdateUser(data);
+    } else {
+      handleCreateUser(data);
+    }
+  };
 
   useEffect(() => {
     async function fetchUsers() {
@@ -329,89 +304,43 @@ export default function UsersPage() {
             <div className="flex flex-col gap-2">
               {/* NOME */}
               <input
-                placeholder="Nome"
                 className="border p-2 rounded"
-                value={openEdit ? editForm.nome : createForm.nome}
-                onChange={(e) =>
-                  openEdit
-                    ? setEditForm({ ...editForm, nome: e.target.value })
-                    : setCreateForm({ ...createForm, nome: e.target.value })
-                }
+                placeholder="Nome"
+                {...register("nome")}
               />
 
               {/* LOGIN */}
               <input
-                placeholder="Login"
                 className="border p-2 rounded"
-                value={openEdit ? editForm.login : createForm.login}
-                onChange={(e) =>
-                  openEdit
-                    ? setEditForm({ ...editForm, login: e.target.value })
-                    : setCreateForm({ ...createForm, login: e.target.value })
-                }
+                placeholder="Login"
+                {...register("login")}
               />
 
               {/* SENHA */}
               <input
                 type="password"
-                placeholder="Senha"
                 className="border p-2 rounded"
-                value={openEdit ? editForm.senha : createForm.senha}
-                onChange={(e) =>
-                  openEdit
-                    ? setEditForm({ ...editForm, senha: e.target.value })
-                    : setCreateForm({ ...createForm, senha: e.target.value })
-                }
+                placeholder="Senha"
+                {...register("senha")}
               />
 
               {/* CONFIRMA SENHA (só create normalmente, mas mantive padrão) */}
               <input
                 type="password"
-                placeholder="Repetir senha"
                 className="border p-2 rounded"
-                value={
-                  openEdit ? editForm.confirmSenha : createForm.confirmSenha
-                }
-                onChange={(e) =>
-                  openEdit
-                    ? setEditForm({ ...editForm, confirmSenha: e.target.value })
-                    : setCreateForm({
-                        ...createForm,
-                        confirmSenha: e.target.value,
-                      })
-                }
+                placeholder="Repetir senha"
+                {...register("confirmSenha")}
               />
 
               {/* FUNÇÃO USUÁRIO */}
               <input
-                placeholder="Função do usuário"
                 className="border p-2 rounded"
-                value={
-                  openEdit ? editForm.funcao_usuario : createForm.funcao_usuario
-                }
-                onChange={(e) =>
-                  openEdit
-                    ? setEditForm({
-                        ...editForm,
-                        funcao_usuario: e.target.value,
-                      })
-                    : setCreateForm({
-                        ...createForm,
-                        funcao_usuario: e.target.value,
-                      })
-                }
+                placeholder="Função do usuário"
+                {...register("funcao_usuario")}
               />
 
               {/* ROLE */}
-              <select
-                className="border p-2 rounded"
-                value={openEdit ? editForm.roleId : createForm.roleId}
-                onChange={(e) =>
-                  openEdit
-                    ? setEditForm({ ...editForm, roleId: e.target.value })
-                    : setCreateForm({ ...createForm, roleId: e.target.value })
-                }
-              >
+              <select className="border p-2 rounded" {...register("roleId")}>
                 <option value="">Selecione uma role</option>
                 {roles.map((role) => (
                   <option key={role.id} value={role.id}>
@@ -422,16 +351,7 @@ export default function UsersPage() {
 
               {/* STATUS (NÃO APARECE NO CREATE) */}
               {openEdit && (
-                <select
-                  className="border p-2 rounded"
-                  value={editForm.status}
-                  onChange={(e) =>
-                    setEditForm({
-                      ...editForm,
-                      status: e.target.value,
-                    })
-                  }
-                >
+                <select className="border p-2 rounded" {...register("status")}>
                   <option value="">Selecione o status</option>
                   <option value="Ativo">Ativo</option>
                   <option value="Desativado">Desativado</option>
@@ -449,7 +369,7 @@ export default function UsersPage() {
               </button>
 
               <button
-                onClick={openEdit ? handleUpdateUser : handleCreateUser}
+                onClick={handleSubmit(onSubmit)}
                 className="px-4 py-2 bg-blue-600 text-white rounded"
               >
                 Salvar
