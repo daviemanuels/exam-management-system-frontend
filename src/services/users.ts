@@ -1,5 +1,5 @@
 import { api } from "@/services/api";
-import { CreateUserDTO } from "@/types/user/CreateUserDTO";
+import { CreateUserDTO } from "@/types/user/UserDTO";
 
 export async function getUsers() {
   const response = await api.get("/users");

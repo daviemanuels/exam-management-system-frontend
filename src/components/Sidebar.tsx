@@ -21,8 +21,16 @@ export function Sidebar() {
           Dashboard
         </Link>
 
+        <Link href="/pacientes" className={getLinkClass("/pacientes")}>
+          Pacientes
+        </Link>
+
         <Link href="/users" className={getLinkClass("/users")}>
           Usuários
+        </Link>
+
+        <Link href="/roles" className={getLinkClass("/roles")}>
+          Roles
         </Link>
 
         <Link href="/exames" className={getLinkClass("/exames")}>
