@@ -37,6 +37,10 @@ export function Sidebar() {
           Exames
         </Link>
 
+        <Link href="/servicos" className={getLinkClass("/servicos")}>
+          Serviços
+        </Link>
+
         <Link href="/logs" className={getLinkClass("/logs")}>
           Logs
         </Link>
