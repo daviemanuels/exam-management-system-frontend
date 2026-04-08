@@ -47,6 +47,14 @@ export default function UsersPage() {
     setOpenCreate(false);
     setOpenEdit(false);
     setSelectedUserId(null);
+
+    setValue("nome", "");
+    setValue("login", "");
+    setValue("senha", "");
+    setValue("confirmSenha", "");
+    setValue("funcao_usuario", "");
+    setValue("status", "");
+    setValue("roleId", "");
   }
 
   function handleOpenEdit(user: User) {

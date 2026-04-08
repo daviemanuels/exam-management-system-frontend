@@ -26,7 +26,7 @@ export default function LoginPage() {
         path: "/",
       });
 
-      router.push("/dashboard");
+      router.push("/exames");
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;
 

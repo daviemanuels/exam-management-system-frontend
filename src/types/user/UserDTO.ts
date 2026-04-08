@@ -3,6 +3,6 @@ export type CreateUserDTO = {
   login: string;
   senha?: string;
   status?: string;
-  funcao_usuario: string;
-  roleId: string;
+  funcao_usuario?: string;
+  roleId?: string;
 };

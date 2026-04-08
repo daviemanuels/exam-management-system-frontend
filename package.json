@@ -14,15 +14,19 @@
     "apexcharts": "^5.10.4",
     "axios": "^1.6.0",
     "cookies-next": "^6.1.1",
+    "jwt-decode": "^4.0.0",
     "next": "14.2.5",
+    "pdfmake": "^0.3.7",
     "react": "18.3.1",
     "react-apexcharts": "^2.1.0",
     "react-dom": "18.3.1",
     "react-hook-form": "^7.72.0",
-    "react-input-mask": "^2.0.4"
+    "react-input-mask": "^2.0.4",
+    "react-select": "^5.10.2"
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/pdfmake": "^0.3.2",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-input-mask": "^3.0.6",

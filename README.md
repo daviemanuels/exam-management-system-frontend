@@ -1,7 +1,169 @@
-## 🚀 Features
+# 🏥 Exam Management System
 
-- 🔐 Authentication system
-- 👥 User and role management
-- 📊 Dashboard with analytics
-- 🧾 Exam registration and tracking
-- 📄 PDF generation for reports
+Sistema completo de gerenciamento de exames laboratoriais desenvolvido com foco em organização, controle de fluxo clínico e rastreabilidade de informações.
+
+---
+
+## 📌 Visão Geral
+
+O **Exam Management System** é uma aplicação full stack para gerenciamento de exames laboratoriais, permitindo o controle de pacientes, usuários, serviços, exames e auditoria de ações do sistema.
+
+O sistema simula um ambiente real de clínica/laboratório, com autenticação, controle de permissões e geração de documentos (PDF de protocolo).
+
+---
+
+## 🚀 Funcionalidades
+
+### 👤 Usuários e Autenticação
+
+- Login com autenticação segura
+- Controle de acesso por roles (RBAC)
+- Proteção de rotas no frontend e backend
+
+### 🔐 Permissões (Roles)
+
+- Criação e gerenciamento de roles
+- Permissões associadas a funções do sistema
+- Controle de acesso por nível de usuário
+
+### 🧑 Pacientes
+
+- Cadastro completo de pacientes
+- Edição e remoção
+- Associação com exames
+
+### 🧪 Exames
+
+- Criação de exames por paciente
+- Associação de múltiplos serviços
+- Tipos de exame (Anátomo, Colpo, Imuno, Outros)
+- Atualização e exclusão
+
+### 🧾 Serviços
+
+- Cadastro de serviços laboratoriais
+- Associação com exames
+
+### 📜 Logs (Auditoria)
+
+- Registro de ações do sistema
+- Histórico de alterações
+- Rastreamento de atividades de usuários
+
+### 📄 Geração de PDF
+
+- Geração de protocolo de exames
+- Documento estruturado com dados do paciente e serviços
+- Utilização da biblioteca **pdfMake**
+
+---
+
+## 🧱 Tecnologias Utilizadas
+
+### Frontend
+
+- Next.js
+- React
+- TypeScript
+- React Hook Form
+- React Select
+- TanStack Table
+- pdfMake
+
+### Backend
+
+- Node.js
+- Express
+- Prisma ORM
+- PostgreSQL
+- JWT Authentication
+
+---
+
+## 🏗️ Arquitetura
+
+O sistema segue uma arquitetura modular baseada em responsabilidades:
+
+- Controllers
+- Services
+- Repositories (via Prisma)
+- Middlewares de autenticação e autorização
+- Separação clara entre regras de negócio e camada de API
+
+---
+
+## 📄 Exemplo de Funcionalidade (PDF)
+
+O sistema gera automaticamente um protocolo de exame contendo:
+
+- Dados do paciente
+- Tipo de exame
+- Serviços vinculados
+- Data de emissão
+- Número de protocolo
+
+---
+
+## 📸 Demonstrações
+
+### Dashboard
+
+![Dashboard](./assets/dashboard.png)
+
+### Exames
+
+![Exames](./assets/exames.png)
+
+### Pacientes
+
+![Dashboard](./assets/pacientes.png)
+
+### Users
+
+![Dashboard](./assets/users.png)
+
+### Roles
+
+![Dashboard](./assets/roles.png)
+
+### Services
+
+![Dashboard](./assets/services.png)
+
+### Logs
+
+![Dashboard](./assets/logs.png)
+
+### Sidebar
+
+![Dashboard](./assets/sidebar.png)
+
+---
+
+## ⚙️ Como executar o projeto
+
+### Backend
+
+```bash
+cd backend
+
+npm install
+
+npx prisma generate
+
+npx prisma migrate dev
+
+npm run dev
+```
+
+### Frontend
+
+```bash
+cd frontend
+
+# instalar dependências
+npm install
+
+# iniciar projeto
+npm run dev
+```

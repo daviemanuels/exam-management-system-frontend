@@ -1,22 +1,41 @@
 "use client";
 
-import { deleteCookie } from "cookies-next";
+import { deleteCookie, getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
+
+type TokenPayload = {
+  nome: string;
+  email?: string;
+  role?: string;
+};
 
 export function Header() {
   const router = useRouter();
 
-  function handleLogout() {
-    // ❌ remove o token
-    deleteCookie("session");
+  const token = getCookie("session") as string | undefined;
 
-    // 🔁 redireciona pro login
+  let userName = "";
+
+  if (token) {
+    try {
+      const decoded = jwtDecode<TokenPayload>(token);
+      userName = decoded.nome;
+    } catch (err) {
+      console.error("Erro ao decodificar token", err);
+    }
+  }
+
+  function handleLogout() {
+    deleteCookie("session");
     router.replace("/login");
   }
 
   return (
     <header className="w-full h-16 bg-white shadow flex items-center justify-between px-6">
-      <h2 className="text-lg font-semibold text-text">Dashboard</h2>
+      <h2 className="text-lg font-semibold text-text">
+        Bem-vindo, {userName || "usuário"}
+      </h2>
 
       <div>
         <button

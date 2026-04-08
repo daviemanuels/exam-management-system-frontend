@@ -19,6 +19,8 @@ import { getServicos } from "@/services/servicos";
 import { Exame } from "@/types/exames/ExamesDTO";
 import { PacienteDTO } from "@/types/paciente/PacienteDTO";
 import { Servico } from "@/types/servicos/ServicoDTO";
+import Select from "react-select";
+import { gerarProtocoloPdf } from "@/utils/gerarProtocoloPdf";
 
 export default function ExamesPage() {
   const [data, setData] = useState<Exame[]>([]);
@@ -34,6 +36,11 @@ export default function ExamesPage() {
   const [servicosSelecionados, setServicosSelecionados] = useState<string[]>(
     [],
   );
+
+  const options = pacientes.map((p) => ({
+    value: p.id,
+    label: p.nome,
+  }));
 
   const pacienteSelecionado = pacientes.find((p) => p.id === pacienteId);
 
@@ -74,6 +81,7 @@ export default function ExamesPage() {
         pacienteId,
         servicos: servicosSelecionados,
       });
+      console.log(createExames);
     }
 
     handleCloseModal();
@@ -141,6 +149,12 @@ export default function ExamesPage() {
           >
             Excluir
           </button>
+          <button
+            onClick={() => gerarProtocoloPdf(row.original)}
+            className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700"
+          >
+            Gerar Protocolo
+          </button>
         </div>
       ),
     },
@@ -151,6 +165,8 @@ export default function ExamesPage() {
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  const selectedOption = options.find((opt) => opt.value === pacienteId);
 
   return (
     <div className="p-6">
@@ -212,18 +228,13 @@ export default function ExamesPage() {
             </select>
 
             {/* PACIENTE */}
-            <select
-              value={pacienteId}
-              onChange={(e) => setPacienteId(e.target.value)}
-              className="border p-2 rounded w-full mb-3"
-            >
-              <option value="">Selecione o paciente</option>
-              {pacientes.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.nome}
-                </option>
-              ))}
-            </select>
+            <Select
+              options={options}
+              value={selectedOption || null}
+              placeholder="Selecione o paciente"
+              onChange={(selected) => setPacienteId(selected?.value || "")}
+              isClearable
+            />
 
             {/* 🔥 DADOS DO PACIENTE */}
             {pacienteSelecionado && (
@@ -241,7 +252,7 @@ export default function ExamesPage() {
             )}
 
             {/* SERVIÇOS */}
-            <div className="mb-3">
+            <div className="mb-3 mt-2">
               <p className="font-semibold mb-1">Serviços</p>
 
               <div className="flex flex-col gap-1 max-h-40 overflow-y-auto">
@@ -260,7 +271,7 @@ export default function ExamesPage() {
 
             <div className="flex justify-end gap-2">
               <button
-                onClick={() => setOpenCreate(false)}
+                onClick={handleCloseModal}
                 className="px-4 py-2 bg-gray-300 rounded"
               >
                 Cancelar

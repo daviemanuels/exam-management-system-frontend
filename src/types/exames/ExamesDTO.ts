@@ -15,6 +15,7 @@ export type UpdateExameDTO = {
 
 export type Exame = {
   id: string;
+  numero?: string;
   tipo: string;
   paciente: PacienteDTO;
   servicos: {

@@ -1,17 +1,37 @@
 "use client";
 
+import { createUser } from "@/services/users";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function RegisterPage() {
   const [nome, setNome] = useState("");
   const [login, setLogin] = useState("");
   const [senha, setSenha] = useState("");
+  const router = useRouter();
 
-  function handleRegister(e: React.FormEvent) {
+  async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
 
-    console.log({ nome, login, senha });
+    try {
+      await createUser({
+        nome,
+        login,
+        senha,
+      });
+
+      alert("Usuário cadastrado com sucesso");
+
+      // limpar campos
+      setNome("");
+      setLogin("");
+      setSenha("");
+
+      router.push("/login");
+    } catch (err: any) {
+      alert(err.response?.data?.error || "Erro ao cadastrar usuário");
+    }
   }
 
   return (
