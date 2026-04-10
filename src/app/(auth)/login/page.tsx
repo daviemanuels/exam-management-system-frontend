@@ -35,19 +35,29 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-10 sm:py-0">
       <form
         onSubmit={handleLogin}
-        className="bg-white p-8 rounded-2xl shadow-lg w-96 text-center"
+        className="
+          w-full
+          max-w-md
+          bg-white
+          p-6 sm:p-8
+          rounded-2xl
+          shadow-lg
+          text-center
+          mx-auto
+        "
       >
         {/* LOGO */}
         <div className="flex justify-center mb-4">
           <Image
             src="/logo_exam_management_system.png"
             alt="Logo"
-            width={200}
-            height={200}
+            width={180}
+            height={180}
             priority
+            className="h-auto w-auto max-w-full"
           />
         </div>
 
