@@ -60,7 +60,7 @@ O sistema simula um ambiente real de clínica/laboratório, com autenticação, 
 
 ## 🧱 Tecnologias Utilizadas
 
-### Frontend
+## 🚀 Frontend
 
 - Next.js
 - React
@@ -70,9 +70,25 @@ O sistema simula um ambiente real de clínica/laboratório, com autenticação, 
 - TanStack Table
 - pdfMake
 
-Frontend rodando em:
+---
 
+## 🌐 Acesso ao sistema
+
+Frontend rodando em:  
 https://exam-management-system-frontend-phi.vercel.app/login
+
+---
+
+## 🔐 Acesso ao sistema (importante)
+
+O sistema permite o **cadastro de usuários**, porém o usuário criado por padrão possui acesso limitado, com apenas **1 rota liberada**.
+
+Para visualizar todas as funcionalidades e permissões do sistema, utilize o usuário administrador:
+
+- 👤 Usuário: `admin`
+- 🔑 Senha: `123456`
+
+---
 
 ### Backend
 
@@ -81,8 +97,6 @@ https://exam-management-system-frontend-phi.vercel.app/login
 - Prisma ORM
 - PostgreSQL
 - JWT Authentication
-
----
 
 ## API
 
@@ -94,6 +108,8 @@ https://exam-management-system-backend-6gzw.onrender.com
 
 Swagger:
 https://exam-management-system-backend-6gzw.onrender.com/docs
+
+---
 
 ## 🏗️ Arquitetura
 
