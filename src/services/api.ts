@@ -2,7 +2,7 @@ import axios from "axios";
 import { getCookieClient } from "@/lib/cookieClient";
 
 export const api = axios.create({
-  baseURL: "http://localhost:3333",
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
 // 🔥 Interceptor pra enviar token automaticamente
