@@ -70,6 +70,10 @@ O sistema simula um ambiente real de clínica/laboratório, com autenticação, 
 - TanStack Table
 - pdfMake
 
+Frontend rodando em:
+
+https://exam-management-system-frontend-phi.vercel.app/login
+
 ### Backend
 
 - Node.js
@@ -79,6 +83,17 @@ O sistema simula um ambiente real de clínica/laboratório, com autenticação, 
 - JWT Authentication
 
 ---
+
+## API
+
+Backend rodando em:
+
+https://exam-management-system-backend-6gzw.onrender.com
+
+## API Documentation
+
+Swagger:
+https://exam-management-system-backend-6gzw.onrender.com/docs
 
 ## 🏗️ Arquitetura
 
