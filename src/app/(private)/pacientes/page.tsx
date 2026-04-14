@@ -186,10 +186,11 @@ export default function PacientesPage() {
   });
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       <h1 className="text-2xl font-bold mb-4">Pacientes</h1>
 
-      <div className="flex items-center gap-2 mb-4">
+      {/* Filtros */}
+      <div className="flex flex-col md:flex-row md:items-center gap-2 mb-4">
         <input
           type="text"
           placeholder="Buscar paciente..."
@@ -200,14 +201,71 @@ export default function PacientesPage() {
 
         <button
           onClick={() => setOpenCreate(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded"
+          className="px-4 py-2 bg-blue-600 text-white rounded w-full md:w-auto"
         >
           + Cadastrar paciente
         </button>
       </div>
 
-      <div className="bg-white rounded shadow overflow-hidden">
-        <table className="w-full">
+      {/* ================= MOBILE (CARDS) ================= */}
+      <div className="md:hidden flex flex-col gap-3">
+        {table.getRowModel().rows.map((row) => {
+          const paciente = row.original;
+
+          return (
+            <div key={paciente.id} className="bg-white p-4 rounded shadow">
+              <p className="font-semibold">{paciente.nome}</p>
+              <p className="text-sm text-gray-600">
+                CPF: {formatCPF(paciente.cpf)}
+              </p>
+              <p className="text-sm text-gray-600">Sexo: {paciente.sexo}</p>
+
+              {paciente.telefone && (
+                <p className="text-sm text-gray-600">
+                  Tel: {paciente.telefone}
+                </p>
+              )}
+
+              <div className="flex gap-2 mt-3">
+                <button
+                  onClick={() => handleOpenEdit(paciente)}
+                  className="flex-1 px-3 py-2 bg-blue-500 text-white rounded text-sm"
+                >
+                  Alterar
+                </button>
+
+                <button
+                  onClick={async () => {
+                    if (!confirm("Deseja excluir este paciente?")) return;
+
+                    try {
+                      await deletePaciente(paciente.id);
+                      fetchData();
+                    } catch (err: any) {
+                      alert(
+                        err.response?.data?.error || "Erro ao excluir paciente",
+                      );
+                    }
+                  }}
+                  className="flex-1 px-3 py-2 bg-red-500 text-white rounded text-sm"
+                >
+                  Excluir
+                </button>
+              </div>
+            </div>
+          );
+        })}
+
+        {data.length === 0 && (
+          <p className="text-center text-gray-500">
+            Nenhum paciente encontrado
+          </p>
+        )}
+      </div>
+
+      {/* ================= DESKTOP (TABELA) ================= */}
+      <div className="hidden md:block bg-white rounded shadow overflow-x-auto">
+        <table className="w-full min-w-[800px]">
           <thead className="bg-gray-100">
             {table.getHeaderGroups().map((hg) => (
               <tr key={hg.id}>
@@ -229,7 +287,7 @@ export default function PacientesPage() {
 
           <tbody>
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="border-t">
+              <tr key={row.id} className="border-t hover:bg-gray-50">
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="p-3">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -247,9 +305,9 @@ export default function PacientesPage() {
         )}
       </div>
 
-      {/* MODAL */}
+      {/* ================= MODAL ================= */}
       {(openCreate || openEdit) && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white p-6 rounded w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">
               {openEdit ? "Editar paciente" : "Cadastrar paciente"}
@@ -286,11 +344,13 @@ export default function PacientesPage() {
                   {errors.cpf.message}
                 </span>
               )}
+
               <input
                 {...register("email")}
                 placeholder="Email"
                 className="border p-2 rounded"
               />
+
               <InputMask mask="(99) 99999-9999" {...register("telefone")}>
                 {(inputProps: any) => (
                   <input
@@ -300,6 +360,7 @@ export default function PacientesPage() {
                   />
                 )}
               </InputMask>
+
               <InputMask mask="99/99/9999" {...register("dataNascimento")}>
                 {(inputProps: any) => (
                   <input
@@ -309,6 +370,7 @@ export default function PacientesPage() {
                   />
                 )}
               </InputMask>
+
               <input
                 {...register("nacionalidade")}
                 placeholder="Nacionalidade"
@@ -323,6 +385,7 @@ export default function PacientesPage() {
                 <option value="Masculino">Masculino</option>
                 <option value="Feminino">Feminino</option>
               </select>
+
               {errors.sexo && (
                 <span className="text-red-500 text-sm">
                   {errors.sexo.message}

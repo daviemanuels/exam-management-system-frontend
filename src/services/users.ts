@@ -17,6 +17,6 @@ export async function updateUser(id: string, data: CreateUserDTO) {
 }
 
 export async function deleteUser(id: string) {
-  const response = await api.delete(`/user/${id}`);
+  const response = await api.delete(`/users/${id}`);
   return response.data;
 }

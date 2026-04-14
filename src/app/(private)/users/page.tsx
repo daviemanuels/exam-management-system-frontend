@@ -211,10 +211,11 @@ export default function UsersPage() {
   });
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       <h1 className="text-2xl font-bold mb-4">Usuários</h1>
 
-      <div className="flex items-center gap-2 mb-4">
+      {/* FILTRO */}
+      <div className="flex flex-col md:flex-row md:items-center gap-2 mb-4">
         <input
           type="text"
           placeholder="Buscar usuário..."
@@ -225,14 +226,98 @@ export default function UsersPage() {
 
         <button
           onClick={() => setOpenCreate(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          className="px-4 py-2 bg-blue-600 text-white rounded w-full md:w-auto hover:bg-blue-700"
         >
           + Cadastrar usuário
         </button>
       </div>
 
-      <div className="bg-white rounded shadow overflow-hidden">
-        <table className="w-full border-collapse">
+      {/* ================= MOBILE (CARDS) ================= */}
+      <div className="md:hidden flex flex-col gap-3">
+        {table.getRowModel().rows.map((row) => {
+          const user = row.original;
+
+          return (
+            <div key={row.id} className="bg-white p-4 rounded shadow">
+              <p className="font-semibold text-lg">{user.nome}</p>
+
+              <p className="text-sm text-gray-600">{user.login}</p>
+
+              {user.role && (
+                <p className="text-sm mt-1">
+                  Role: <span className="font-medium">{user.role.name}</span>
+                </p>
+              )}
+
+              {user.funcao_usuario && (
+                <p className="text-sm text-gray-600">
+                  Função: {user.funcao_usuario}
+                </p>
+              )}
+
+              {user.status && (
+                <p className="text-sm mt-1">
+                  Status:{" "}
+                  <span
+                    className={`px-2 py-1 rounded text-xs ${
+                      user.status === "Ativo"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                  >
+                    {user.status}
+                  </span>
+                </p>
+              )}
+
+              <div className="flex gap-2 mt-3">
+                <button
+                  onClick={() => {
+                    setOpenEdit(true);
+                    setSelectedUserId(user.id);
+
+                    setValue("nome", user.nome);
+                    setValue("login", user.login);
+                    setValue("funcao_usuario", user.funcao_usuario);
+                    setValue("roleId", user.role?.id || "");
+                    setValue("status", user.status);
+                  }}
+                  className="flex-1 px-3 py-2 bg-blue-500 text-white rounded text-sm"
+                >
+                  Alterar
+                </button>
+
+                <button
+                  onClick={async () => {
+                    if (!confirm("Deseja excluir este usuário?")) return;
+
+                    try {
+                      await deleteUser(user.id);
+                      const response = await getUsers();
+                      setData(response);
+                    } catch (err: any) {
+                      alert(
+                        err.response?.data?.error || "Erro ao excluir usuário",
+                      );
+                    }
+                  }}
+                  className="flex-1 px-3 py-2 bg-red-500 text-white rounded text-sm"
+                >
+                  Excluir
+                </button>
+              </div>
+            </div>
+          );
+        })}
+
+        {data.length === 0 && (
+          <p className="text-center text-gray-500">Nenhum usuário encontrado</p>
+        )}
+      </div>
+
+      {/* ================= DESKTOP (TABELA) ================= */}
+      <div className="hidden md:block bg-white rounded shadow overflow-x-auto">
+        <table className="w-full min-w-[800px] border-collapse">
           <thead className="bg-gray-100">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -247,7 +332,6 @@ export default function UsersPage() {
                       header.getContext(),
                     )}
 
-                    {/* 🔽 Indicador de ordenação */}
                     {{
                       asc: " 🔼",
                       desc: " 🔽",
@@ -278,12 +362,12 @@ export default function UsersPage() {
         )}
       </div>
 
-      {/* 📄 Paginação */}
-      <div className="flex items-center justify-between mt-4">
+      {/* PAGINAÇÃO */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-2 mt-4">
         <button
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
-          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 w-full md:w-auto"
         >
           Anterior
         </button>
@@ -296,34 +380,33 @@ export default function UsersPage() {
         <button
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
-          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 w-full md:w-auto"
         >
           Próxima
         </button>
       </div>
+
+      {/* MODAL */}
       {(openCreate || openEdit) && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white p-6 rounded w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">
               {openEdit ? "Editar usuário" : "Cadastrar usuário"}
             </h2>
 
             <div className="flex flex-col gap-2">
-              {/* NOME */}
               <input
                 className="border p-2 rounded"
                 placeholder="Nome"
                 {...register("nome")}
               />
 
-              {/* LOGIN */}
               <input
                 className="border p-2 rounded"
                 placeholder="Login"
                 {...register("login")}
               />
 
-              {/* SENHA */}
               <input
                 type="password"
                 className="border p-2 rounded"
@@ -331,7 +414,6 @@ export default function UsersPage() {
                 {...register("senha")}
               />
 
-              {/* CONFIRMA SENHA (só create normalmente, mas mantive padrão) */}
               <input
                 type="password"
                 className="border p-2 rounded"
@@ -339,14 +421,12 @@ export default function UsersPage() {
                 {...register("confirmSenha")}
               />
 
-              {/* FUNÇÃO USUÁRIO */}
               <input
                 className="border p-2 rounded"
                 placeholder="Função do usuário"
                 {...register("funcao_usuario")}
               />
 
-              {/* ROLE */}
               <select className="border p-2 rounded" {...register("roleId")}>
                 <option value="">Selecione uma role</option>
                 {roles.map((role) => (
@@ -356,7 +436,6 @@ export default function UsersPage() {
                 ))}
               </select>
 
-              {/* STATUS (NÃO APARECE NO CREATE) */}
               {openEdit && (
                 <select className="border p-2 rounded" {...register("status")}>
                   <option value="">Selecione o status</option>
@@ -366,7 +445,6 @@ export default function UsersPage() {
               )}
             </div>
 
-            {/* BOTÕES */}
             <div className="flex justify-end gap-2 mt-4">
               <button
                 onClick={handleCloseModal}

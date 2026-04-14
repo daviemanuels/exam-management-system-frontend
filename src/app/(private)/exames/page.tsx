@@ -104,7 +104,7 @@ export default function ExamesPage() {
     // paciente
     setPacienteId(exame.paciente.id);
 
-    // 🔥 serviços (transforma para string[])
+    // serviços
     const servicosIds = exame.servicos.map((s) => s.servico.id);
     setServicosSelecionados(servicosIds);
   }
@@ -169,48 +169,98 @@ export default function ExamesPage() {
   const selectedOption = options.find((opt) => opt.value === pacienteId);
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       <h1 className="text-2xl font-bold mb-4">Exames</h1>
 
       <button
         onClick={() => setOpenCreate(true)}
-        className="mb-4 px-4 py-2 bg-blue-600 text-white rounded"
+        className="mb-4 px-4 py-2 bg-blue-600 text-white rounded w-full md:w-auto"
       >
         + Novo exame
       </button>
 
-      <table className="w-full bg-white shadow rounded">
-        <thead>
-          {table.getHeaderGroups().map((hg) => (
-            <tr key={hg.id}>
-              {hg.headers.map((header) => (
-                <th key={header.id} className="p-3 text-left">
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext(),
-                  )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
+      {/* ================= MOBILE (CARDS) ================= */}
+      <div className="md:hidden flex flex-col gap-3">
+        {table.getRowModel().rows.map((row) => {
+          const exame = row.original;
 
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="border-t">
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="p-3">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+          return (
+            <div key={row.id} className="bg-white p-4 rounded shadow">
+              <p className="font-semibold">
+                {exame.paciente?.nome || "Sem paciente"}
+              </p>
 
-      {/* MODAL */}
+              <p className="text-sm text-gray-600">Tipo: {exame.tipo}</p>
+
+              {exame.paciente?.cpf && (
+                <p className="text-sm text-gray-600">
+                  CPF: {exame.paciente.cpf}
+                </p>
+              )}
+              <div className="flex gap-2 mt-3">
+                <button
+                  onClick={() => {
+                    setOpenEdit(true);
+                  }}
+                  className="flex-1 px-3 py-2 bg-blue-500 text-white rounded text-sm"
+                >
+                  Alterar
+                </button>
+
+                <button className="flex-1 px-3 py-2 bg-red-500 text-white rounded text-sm">
+                  Excluir
+                </button>
+              </div>
+            </div>
+          );
+        })}
+
+        {table.getRowModel().rows.length === 0 && (
+          <p className="text-center text-gray-500">Nenhum exame encontrado</p>
+        )}
+      </div>
+
+      {/* ================= DESKTOP (TABELA) ================= */}
+      <div className="hidden md:block bg-white shadow rounded overflow-x-auto">
+        <table className="w-full min-w-[800px]">
+          <thead className="bg-gray-100">
+            {table.getHeaderGroups().map((hg) => (
+              <tr key={hg.id}>
+                {hg.headers.map((header) => (
+                  <th key={header.id} className="p-3 text-left">
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext(),
+                    )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id} className="border-t hover:bg-gray-50">
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className="p-3">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {table.getRowModel().rows.length === 0 && (
+          <p className="p-4 text-center text-gray-500">
+            Nenhum exame encontrado
+          </p>
+        )}
+      </div>
+
+      {/* ================= MODAL ================= */}
       {(openCreate || openEdit) && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white p-6 rounded w-full max-w-lg">
             <h2 className="text-xl font-bold mb-4">Novo exame</h2>
 
@@ -236,9 +286,9 @@ export default function ExamesPage() {
               isClearable
             />
 
-            {/* 🔥 DADOS DO PACIENTE */}
+            {/* DADOS DO PACIENTE */}
             {pacienteSelecionado && (
-              <div className="bg-gray-100 p-3 rounded mb-3 text-sm">
+              <div className="bg-gray-100 p-3 rounded mb-3 text-sm mt-3">
                 <p>
                   <b>CPF:</b> {pacienteSelecionado.cpf}
                 </p>
@@ -269,7 +319,7 @@ export default function ExamesPage() {
               </div>
             </div>
 
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-2 mt-4">
               <button
                 onClick={handleCloseModal}
                 className="px-4 py-2 bg-gray-300 rounded"

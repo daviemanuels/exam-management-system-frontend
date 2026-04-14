@@ -11,7 +11,13 @@ type TokenPayload = {
   role: string;
 };
 
-export function Sidebar() {
+export function Sidebar({
+  open,
+  setOpen,
+}: {
+  open: boolean;
+  setOpen: (value: boolean) => void;
+}) {
   const pathname = usePathname();
 
   const [role, setRole] = useState<string | null>(null);
@@ -23,23 +29,12 @@ export function Sidebar() {
     if (token) {
       try {
         const decoded = jwtDecode<TokenPayload>(token);
-        setRole(decoded.role); // 🔥 pegando do token
+        setRole(decoded.role);
       } catch (err) {
         console.error("Erro ao decodificar token");
       }
     }
   }, []);
-
-  function getCookie(name: string) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-
-    if (parts.length === 2) {
-      return parts.pop()?.split(";").shift();
-    }
-
-    return null;
-  }
 
   function getLinkClass(path: string) {
     return `p-2 rounded cursor-pointer ${
@@ -50,58 +45,84 @@ export function Sidebar() {
   const isAdmin = role === "Administrador";
 
   return (
-    <aside className="w-64 h-screen bg-primaryDark text-white p-4">
-      <h1 className="text-xl font-bold mb-6">Exam System</h1>
+    <>
+      {/* Overlay mobile */}
+      {open && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setOpen(false)}
+        />
+      )}
 
-      <nav className="flex flex-col gap-2">
-        {isAdmin && (
-          <Link href="/dashboard" className={getLinkClass("/dashboard")}>
-            Dashboard
-          </Link>
-        )}
+      {/* Sidebar */}
+      <aside
+        className={`
+          fixed top-0 left-0 z-50 h-full w-64 bg-primaryDark text-white p-4
+          transform transition-transform duration-300
+          ${open ? "translate-x-0" : "-translate-x-full"}
+          md:translate-x-0 md:static md:block
+        `}
+      >
+        {/* Botão fechar mobile */}
+        <button className="md:hidden mb-4" onClick={() => setOpen(false)}>
+          ✕
+        </button>
 
-        {isAdmin && (
-          <div>
-            <div
-              onClick={() => setOpenCadastro(!openCadastro)}
-              className="p-2 rounded cursor-pointer hover:bg-primary flex justify-between items-center"
-            >
-              <span>Cadastrar</span>
-              <span>{openCadastro ? "▲" : "▼"}</span>
-            </div>
+        <h1 className="text-xl font-bold mb-6">Exam System</h1>
 
-            {openCadastro && (
-              <div className="ml-4 mt-1 flex flex-col gap-1">
-                <Link href="/pacientes" className={getLinkClass("/pacientes")}>
-                  Pacientes
-                </Link>
+        <nav className="flex flex-col gap-2">
+          {isAdmin && (
+            <Link href="/dashboard" className={getLinkClass("/dashboard")}>
+              Dashboard
+            </Link>
+          )}
 
-                <Link href="/users" className={getLinkClass("/users")}>
-                  Usuários
-                </Link>
-
-                <Link href="/roles" className={getLinkClass("/roles")}>
-                  Roles
-                </Link>
-
-                <Link href="/servicos" className={getLinkClass("/servicos")}>
-                  Serviços
-                </Link>
+          {isAdmin && (
+            <div>
+              <div
+                onClick={() => setOpenCadastro(!openCadastro)}
+                className="p-2 rounded cursor-pointer hover:bg-primary flex justify-between"
+              >
+                <span>Cadastrar</span>
+                <span>{openCadastro ? "▲" : "▼"}</span>
               </div>
-            )}
-          </div>
-        )}
 
-        <Link href="/exames" className={getLinkClass("/exames")}>
-          Exames
-        </Link>
+              {openCadastro && (
+                <div className="ml-4 mt-1 flex flex-col gap-1">
+                  <Link
+                    href="/pacientes"
+                    className={getLinkClass("/pacientes")}
+                  >
+                    Pacientes
+                  </Link>
 
-        {isAdmin && (
-          <Link href="/logs" className={getLinkClass("/logs")}>
-            Logs
+                  <Link href="/users" className={getLinkClass("/users")}>
+                    Usuários
+                  </Link>
+
+                  <Link href="/roles" className={getLinkClass("/roles")}>
+                    Roles
+                  </Link>
+
+                  <Link href="/servicos" className={getLinkClass("/servicos")}>
+                    Serviços
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
+
+          <Link href="/exames" className={getLinkClass("/exames")}>
+            Exames
           </Link>
-        )}
-      </nav>
-    </aside>
+
+          {isAdmin && (
+            <Link href="/logs" className={getLinkClass("/logs")}>
+              Logs
+            </Link>
+          )}
+        </nav>
+      </aside>
+    </>
   );
 }

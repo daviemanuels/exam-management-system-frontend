@@ -6,6 +6,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import { getCookieClient } from "@/lib/cookieClient";
+
 type TokenPayload = {
   id: string;
   role: string;
@@ -14,6 +15,7 @@ type TokenPayload = {
 export default function PrivateLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const token = getCookieClient();
@@ -61,13 +63,22 @@ export default function PrivateLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen overflow-hidden">
+      {/* Overlay mobile */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
 
       {/* Conteúdo */}
       <div className="flex-1 flex flex-col">
-        <Header />
+        {/* Header */}
+        <Header onMenuClick={() => setSidebarOpen(true)} />
 
         <main className="flex-1 bg-gray-100 p-4 overflow-auto">{children}</main>
       </div>

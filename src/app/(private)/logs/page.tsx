@@ -90,10 +90,10 @@ export default function LogsPage() {
   });
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       <h1 className="text-2xl font-bold mb-4">Logs do Sistema</h1>
 
-      {/* 🔍 BUSCA */}
+      {/* BUSCA */}
       <div className="mb-4">
         <input
           type="text"
@@ -104,9 +104,9 @@ export default function LogsPage() {
         />
       </div>
 
-      {/* 📊 TABELA */}
-      <div className="bg-white rounded shadow overflow-hidden">
-        <table className="w-full">
+      {/* TABELA */}
+      <div className="bg-white rounded shadow overflow-x-auto">
+        <table className="w-full min-w-[600px]">
           <thead className="bg-gray-100">
             {table.getHeaderGroups().map((hg) => (
               <tr key={hg.id}>
@@ -114,7 +114,7 @@ export default function LogsPage() {
                   <th
                     key={header.id}
                     onClick={header.column.getToggleSortingHandler()}
-                    className="p-3 text-left cursor-pointer"
+                    className="p-2 md:p-3 text-left cursor-pointer text-sm md:text-base"
                   >
                     {flexRender(
                       header.column.columnDef.header,
@@ -128,9 +128,12 @@ export default function LogsPage() {
 
           <tbody>
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="border-t">
+              <tr key={row.id} className="border-t hover:bg-gray-50">
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="p-3">
+                  <td
+                    key={cell.id}
+                    className="p-2 md:p-3 text-sm md:text-base break-words max-w-[300px]"
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}

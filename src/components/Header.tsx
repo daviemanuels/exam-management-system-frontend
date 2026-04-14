@@ -10,7 +10,7 @@ type TokenPayload = {
   role?: string;
 };
 
-export function Header() {
+export function Header({ onMenuClick }: { onMenuClick: () => void }) {
   const router = useRouter();
 
   const token = getCookie("session") as string | undefined;
@@ -32,19 +32,26 @@ export function Header() {
   }
 
   return (
-    <header className="w-full h-16 bg-white shadow flex items-center justify-between px-6">
-      <h2 className="text-lg font-semibold text-text">
-        Bem-vindo, {userName || "usuário"}
-      </h2>
-
-      <div>
-        <button
-          onClick={handleLogout}
-          className="text-sm bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
-        >
-          Logout
+    <header className="w-full h-16 bg-white shadow flex items-center justify-between px-4 md:px-6">
+      {/* ESQUERDA */}
+      <div className="flex items-center gap-3">
+        {/* Botão menu (mobile) */}
+        <button onClick={onMenuClick} className="md:hidden text-xl">
+          ☰
         </button>
+
+        <h2 className="text-sm md:text-lg font-semibold text-text">
+          Bem-vindo, {userName || "usuário"}
+        </h2>
       </div>
+
+      {/* DIREITA */}
+      <button
+        onClick={handleLogout}
+        className="text-xs md:text-sm bg-red-500 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg hover:bg-red-600 transition"
+      >
+        Logout
+      </button>
     </header>
   );
 }
