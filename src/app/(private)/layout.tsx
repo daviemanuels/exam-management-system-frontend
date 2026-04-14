@@ -63,7 +63,7 @@ export default function PrivateLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen">
       {/* Overlay mobile */}
       {sidebarOpen && (
         <div
