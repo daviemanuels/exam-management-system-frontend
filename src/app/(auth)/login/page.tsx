@@ -10,12 +10,20 @@ import { useRouter } from "next/navigation";
 export default function LoginPage() {
   const [login, setLogin] = useState("");
   const [senha, setSenha] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
 
+    if (loading) return;
+
+    setLoading(true);
+
     try {
+      // delay fake de 2 segundos
+      // await new Promise((resolve) => setTimeout(resolve, 2000));
+
       const response = await api.post("/login", {
         login,
         senha,
@@ -31,6 +39,7 @@ export default function LoginPage() {
       const err = error as AxiosError<{ message: string }>;
 
       alert(err.response?.data?.message || "Erro ao fazer login");
+      setLoading(false);
     }
   }
 
@@ -38,16 +47,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4 py-10 sm:py-0">
       <form
         onSubmit={handleLogin}
-        className="
-          w-full
-          max-w-md
-          bg-white
-          p-6 sm:p-8
-          rounded-2xl
-          shadow-lg
-          text-center
-          mx-auto
-        "
+        className="w-full max-w-md bg-white p-6 sm:p-8 rounded-2xl shadow-lg text-center mx-auto"
       >
         {/* LOGO */}
         <div className="flex justify-center mb-4">
@@ -66,7 +66,8 @@ export default function LoginPage() {
         <input
           type="text"
           placeholder="Login"
-          className="w-full mb-4 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          disabled={loading}
+          className="w-full mb-4 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
           value={login}
           onChange={(e) => setLogin(e.target.value)}
         />
@@ -74,16 +75,22 @@ export default function LoginPage() {
         <input
           type="password"
           placeholder="Senha"
-          className="w-full mb-4 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          disabled={loading}
+          className="w-full mb-4 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
           value={senha}
           onChange={(e) => setSenha(e.target.value)}
         />
 
         <button
           type="submit"
-          className="w-full bg-primary text-white p-3 rounded-lg hover:bg-primaryDark transition"
+          disabled={loading}
+          className="w-full bg-primary text-white p-3 rounded-lg hover:bg-primaryDark transition disabled:opacity-70 flex items-center justify-center gap-2"
         >
-          Entrar
+          {loading && (
+            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+          )}
+
+          {loading ? "Entrando..." : "Entrar"}
         </button>
 
         <p className="text-sm mt-4 text-center">
